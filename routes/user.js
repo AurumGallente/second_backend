@@ -6,8 +6,9 @@ var jwt = require('jsonwebtoken');
 var expressJwt = require('express-jwt');
 var bodyParser = require('body-parser');
 var jwtSecret = require('../variables/jwt.js');
+var acl = require('../util/acl.js');
 
-//------------- util functins
+//------------- util functions
 function createHash() {
     var length = 10;
     var chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -18,12 +19,12 @@ function createHash() {
 }
 ;
 
-//------------- END util functins
+//------------- END util functions
 
 
 
 var router = function (app, https) {
-    app.post('user/create', function (req, res) {
+    app.post('/user',acl, function (req, res) {
         if (!req.secure) {
             res.status(403);
             res.send('request should be secure');
@@ -50,7 +51,7 @@ var router = function (app, https) {
             }
         }
     });
-    app.get('/user/', function (req, res) {
+    app.get('/user/', acl, function (req, res) {
         log.info({query: req.query}, 'request users with this query');
         var page = (req.query.page) ? parseInt(req.query.page) - 1 : 0;
         var perPage = (req.query.perPage && req.query.perPage <= 20) ? parseInt(req.query.perPage) : 5;
@@ -58,7 +59,7 @@ var router = function (app, https) {
             res.json(users);
         });
     });
-    app.post('/login', function (req, res) {
+    app.post('/login', acl, function (req, res) {
         if (!req.secure) {
             res.status(403);
             res.send('request should be secure');

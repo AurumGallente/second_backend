@@ -18,5 +18,8 @@
     "mysql": "^2.6.1",
     "password-hash": "^1.2.2",
     "sequelize": "^2.0.5"
+  },
+  "devDependencies": {
+    "sequelize-sync": "^0.1.0"
   }
 }

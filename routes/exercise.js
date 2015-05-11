@@ -1,54 +1,49 @@
 var models = require('../models');
 var bunyan = require('bunyan');
-var log = bunyan.createLogger({name: "musculeModel"});
+var log = bunyan.createLogger({name: "exerciseModel"});
 var acl = require('../util/acl.js');
 
-
 var router = function (app) {
-    app.get('/muscule/', acl, function (req, res) {
-        log.info({query: req.query}, 'request muscules with this query');
+    app.get('/exercise/', acl, function (req, res, next) {
+        log.info({query: req.query}, 'request exercises with this query');
         var page = (req.query.page) ? parseInt(req.query.page) - 1 : 0;
         var perPage = (req.query.perPage && req.query.perPage <= 20) ? parseInt(req.query.perPage) : 5;
-        models.Muscule.findAndCountAll({offset: page * perPage, limit: perPage}).then(function (muscules) {
-            res.json(muscules);
+        models.Exercise.findAndCountAll({offset: page * perPage, limit: perPage}).then(function (exercises) {
+            res.json(exercises);
         });
     });
-    app.get('/muscule/:id', acl, function (req, res) {
+    app.get('/exercise/:id', acl, function (req, res, next) {
         var id = req.params.id;
-        models.Muscule.find({where: {id: id}}).then(function (muscule) {
-            if (muscule == null) {
+        models.Exercise.find({where: {id: id}}).then(function (exercise) {
+            if (exercise == null) {
                 res.status(404);
                 res.send();
             } else {
-                res.json(muscule);
+                res.json(exercise);
             }
         });
     });
-    app.post('/muscule/', acl, function (req, res) {
-
-        models.Muscule.create({
-            title: req.param('title'),
-            description: req.param('description'),
-            video: req.param('video')
+    app.post('/exercise/', acl, function (req, res) {
+        models.Exercise.create({
+            name: req.param('name'),
+            description: req.param('description')            
         }, {isNewRecord: true}).then(function (result) {
-            log.info({}, 'muscule added');
+            log.info({}, 'exercise added');
             res.status(200);
             res.send(result.dataValues);
         }).error(function (err) {
-            log.warn({err: err}, 'error: try adding muscule');
+            log.warn({err: err}, 'error: try adding exercise');
             //console.log(err.message);
             res.status(400);
             res.send(err.message);
-        })
-                ;
+        });
     });
-    app.put('/muscule/:id', acl, function (req, res) {
+    app.put('/exercise/:id', acl, function (req, res) {
         var id = req.params.id;
         //console.log(req.params);
-        models.Muscule.update({
-            title: req.param('title'),
-            description: req.param('description'),
-            video: req.param('video')
+        models.Exercise.update({
+            name: req.param('name'),
+            description: req.param('description')            
         },
         {
             where: {id: id}
@@ -56,18 +51,18 @@ var router = function (app) {
                 .then(function (result) {
                     res.status(200);
                     res.send(result.dataValues);
-                    log.info({}, 'muscule updaded');
+                    log.info({}, 'exercise updaded');
                 })
                 .error(function (err) {
-                    log.warn({err: err}, 'error: try update muscule id:' + id);
+                    log.warn({err: err}, 'error: try update exericise id:' + id);
                     res.status(400);
                     res.send(err.message);
                 });
         ;
     });
-    app.delete('/muscule/:id', acl, function (req, res) {
+    app.delete('/exercise/:id', acl, function (req, res) {
         var id = req.params.id;
-        models.Muscule.destroy({where: {id: id}})
+        models.Exercise.destroy({where: {id: id}})
                 .then(function () {
                     res.status(200);
                     res.send();
@@ -79,5 +74,4 @@ var router = function (app) {
         ;
     });
 };
-
 module.exports = router;

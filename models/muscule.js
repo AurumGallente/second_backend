@@ -1,5 +1,5 @@
 "use strict";
-module.exports = function(sequelize, DataTypes) {
+module.exports = function (sequelize, DataTypes) {
     var Muscule = sequelize.define("Muscule", {
         title: {
             type: DataTypes.STRING,
@@ -18,8 +18,11 @@ module.exports = function(sequelize, DataTypes) {
         }
     }, {
         classMethods: {
-            associate: function(models) {
+            associate: function (models) {
                 // associations can be defined here
+                //Muscule.belongsToMany(models.Exercise, {through: 'MusculeExercise'});
+                Muscule.belongsToMany(models.Exercise, {through: 'muscule_exercise'});
+
             }
         }
     });
